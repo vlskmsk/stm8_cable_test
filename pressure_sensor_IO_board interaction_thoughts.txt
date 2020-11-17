@@ -1,0 +1,24 @@
+So how should I implement the pressure sensor:
+The pressure doesnt not respond to the command from the STM32. Instead, it is streaming data continuous to the STM32.
+So What I can do is:
+
+
+1. I can sync up the read time of the STM32 with the delay time of the STM8. And with an enable command from IO board to enable the pressure reading mode. 
+	In the pressure reading mode, the pressure streaming will have the lower priority compared with the hand movement. 
+	While waiting for the command from the STM8, the STM32 will be in sleep mode. 
+2. I can set up a certain comparator in STM32. When the hand is woken up, the pressure sensing mode is not enabled. 
+	The IO board will send a command to have the STM32 enter the reading mode. Then the pressure data will be refreshed in the background. 
+	Only when the pressure data changes beyond a threshold will the STM be trigger and the pressure data is reported. 
+	
+The complication is that the hand board is a I2C slave. So what actually will be a better way to do this is the first method, 
+	but with NRF read request sync up with the STM8 measurement delay.
+	This feature should only be enabled through the BLE app, or maybe two quick press on the IO board button. 
+	
+	
+1. First I need to port the MATLAB conversion code in the STM8, so the conversion is done in the MCU itself.
+2. Then I need to send floating point numbers through UART. 
+3. Then I need to be able to read floating point number on NRF. sprintf?
+4. Then I need to figure out a way to sync up the reading from the pressure sensor with the query tie of the NRF. 
+	This can be done by sending an incrementing number in STM8 to see if it can continuously be captured in the NRF.
+
+Goal 1, 2, and 3. completed. 
